@@ -1,11 +1,11 @@
 {
   "name": "tienda",
   "version": "1.0.0",
-  "description": "",
-  "main": "script.js",
+  "description": "Sistema Ferreteria",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "start": "node index.js"
+},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ciroemp/Prueba_postg_servidor.git"

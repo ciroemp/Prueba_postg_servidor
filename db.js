@@ -1,12 +1,12 @@
-require('dotenv').config(); // Carga las variables de entorno
+require('dotenv').config({ path: './process.env' });
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  user: pass.env.DB_USER,
-  host: pass.env.DB_HOST,
-  database: pass.env.DB_NAME,
-  password: pass.env.DB_PASSWORD,
-  port: pass.env.DB_PORT,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: String(process.env.DB_PASSWORD), // Forzamos string para evitar el error anterior
+  port: parseInt(process.env.DB_PORT),       // Forzamos que sea un número
 });
 
 pool.connect()

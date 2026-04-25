@@ -18,7 +18,7 @@ Proyecto experimento para conectar una pagina a un servidor de base de datos.
 - /public → frontend
 - db.js → conexión a base de datos
 
-## 🚀 Instalación
+## 🚀 Instalación NODE
 
 1. Clonar repositorio
 2. Instalar dependencias:
@@ -28,6 +28,12 @@ Proyecto experimento para conectar una pagina a un servidor de base de datos.
 
 ## 🌐 Acceso
 http://localhost:3000
+
+## dotenv
+Es una librería que permite usar variables desde un archivo .env 
+Archivo que guarda credenciales
+
+npm install dotenv  
 
 ## 🔐 Roles
 - Admin → puede modificar productos

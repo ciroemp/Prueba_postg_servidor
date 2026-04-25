@@ -1,6 +1,6 @@
 async function cargarProductos() {
   try {
-    const res = await fetch('/productos');
+    const res = await fetch('http://localhost:3000/productos');
 
     if (!res.ok) throw new Error();
 

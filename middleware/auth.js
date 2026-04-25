@@ -1,16 +1,13 @@
-async function agregarProducto() {
-  const nombre = document.getElementById('nombre').value;
-  const precio = document.getElementById('precio').value;
-  const stock = document.getElementById('stock').value;
+module.exports = function (req, res, next) {
+  const rol = req.headers['rol'];
 
-  await fetch('https://api.tudominio.com/productos', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'rol': 'admin' // 👈 esto activa el middleware
-    },
-    body: JSON.stringify({ nombre, precio, stock })
-  });
+  if (!rol) {
+    return res.status(401).json({ error: 'No se envió rol' });
+  }
 
-  alert('Producto agregado');
-}
+  if (rol !== 'admin') {
+    return res.status(403).json({ error: 'No autorizado' });
+  }
+
+  next();
+};

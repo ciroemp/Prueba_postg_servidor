@@ -17,15 +17,18 @@ function renderProductos(productos) {
   cont.innerHTML = '';
 
   productos.forEach(p => {
-    // Si p.imagen_url no existe, intenta usar una ruta por defecto
-    const rutaImagen = p.imagen_url ? p.imagen_url : 'public/img/placeholder.jpg';
+    // IMPORTANTE: Verifica que p.imagen_url sea la ruta completa que envía el backend
+    const imgPath = p.imagen_url ? p.imagen_url : 'public/img/placeholder.jpg';
 
     cont.innerHTML += `
       <div class="card">
         <div class="img-container">
-          <img src="${rutaImagen}" alt="${p.nombre}" class="card-img" onerror="this.src='public/img/placeholder.jpg'">
+          <img src="${imgPath}" 
+               alt="${p.nombre}" 
+               class="card-img" 
+               onerror="this.onerror=null; this.src='public/img/placeholder.jpg';">
         </div>
-        <div class="card-body">
+        <div class="card-content">
           <h3>${p.nombre}</h3>
           <p class="price">$${parseFloat(p.precio).toFixed(2)}</p>
           <p class="stock">Stock disponible: ${p.stock}</p>
@@ -41,7 +44,6 @@ function renderProductos(productos) {
     `;
   });
 }
-
 // BUSCADOR
 function filtrarProductos() {
   const texto = document.getElementById('buscador').value.toLowerCase();

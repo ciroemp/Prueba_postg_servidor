@@ -73,3 +73,40 @@ INSERT INTO productos(nombre, precio, stock, categoria) VALUES
 ('Manguera', 20, 10, 'Jardin'),
 ('Guantes', 6, 25, 'Seguridad'),
 ('Casco', 18, 12, 'Seguridad');
+
+## V1.1 se agregó para imgs
+
+-- 1. Crear la base de datos
+CREATE DATABASE Tienda;
+
+-- 2. Conectarse a la base de datos (Comando para psql)
+\c Tienda;
+
+-- 3. Crear la tabla con la columna 'imagen' incluida
+CREATE TABLE productos (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    precio NUMERIC(10,2) NOT NULL,
+    stock INT NOT NULL,
+    categoria VARCHAR(50),
+    imagen VARCHAR(255) -- Nombre del archivo para la ruta profesional
+);
+
+-- 4. Insertar los productos con sus respectivos nombres de imagen
+-- Nota: Asegúrate de que estos nombres coincidan con los archivos en public/img/
+INSERT INTO productos(nombre, precio, stock, categoria, imagen) VALUES
+('Martillo', 10.5, 20, 'Herramientas', 'martillo.jpg'),
+('Taladro', 75, 5, 'Electricos', 'taladro.jpg'),
+('Clavos', 2, 100, 'Materiales', 'clavos.jpg'),
+('Sierra', 25, 8, 'Herramientas', 'sierra.jpg'),
+('Cemento', 8, 50, 'Construccion', 'cemento.jpg'),
+('Pintura', 15, 30, 'Acabados', 'pintura.jpg'),
+('Llave inglesa', 12, 15, 'Herramientas', 'llave-inglesa.jpg'),
+('Destornillador', 5, 40, 'Herramientas', 'destornillador.jpg'),
+('Brocas', 7, 60, 'Electricos', 'brocas.jpg'),
+('Lija', 3, 80, 'Acabados', 'lija.jpg'),
+('Tornillos', 4, 120, 'Materiales', 'tornillos.jpg'),
+('Escalera', 50, 3, 'Equipos', 'escalera.jpg'),
+('Manguera', 20, 10, 'Jardin', 'manguera.jpg'),
+('Guantes', 6, 25, 'Seguridad', 'guantes.jpg'),
+('Casco', 18, 12, 'Seguridad', 'casco.jpg');

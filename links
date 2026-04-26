@@ -1,0 +1,6 @@
+URL_IMAGENES=http://localhost:3000/public/
+DB_USER=postgres
+DB_PASSWORD=8358
+DB_HOST=localhost
+DB_NAME=Tienda
+DB_PORT=5432

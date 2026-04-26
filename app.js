@@ -1,9 +1,7 @@
 const API = '/productos';
-
 let productosGlobal = [];
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
-// CARGAR PRODUCTOS
 async function cargarProductos() {
   const res = await fetch(API);
   productosGlobal = await res.json();
@@ -11,14 +9,13 @@ async function cargarProductos() {
   actualizarCarrito();
 }
 
-// RENDER PRODUCTOS - CORREGIDO PARA MOSTRAR IMÁGENES
 function renderProductos(productos) {
   const cont = document.getElementById('productos');
   cont.innerHTML = '';
 
   productos.forEach(p => {
-    // IMPORTANTE: Verifica que p.imagen_url sea la ruta completa que envía el backend
-    const imgPath = p.imagen_url ? p.imagen_url : 'public/img/placeholder.jpg';
+    // Si p.imagen_url no existe, intenta usar una ruta por defecto
+    const rutaImagen = p.imagen_url ? p.imagen_url : 'public/img/placeholder.jpg';
 
     cont.innerHTML += `
       <div class="card">
@@ -31,7 +28,7 @@ function renderProductos(productos) {
         <div class="card-content">
           <h3>${p.nombre}</h3>
           <p class="price">$${parseFloat(p.precio).toFixed(2)}</p>
-          <p class="stock">Stock disponible: ${p.stock}</p>
+          <p class="stock">Stock disponible: <strong>${p.stock}</strong></p>
           
           <div class="controles-agregar">
             <input type="number" id="cant-${p.id}" value="1" min="1" max="${p.stock}" class="input-cantidad">
@@ -53,11 +50,9 @@ function filtrarProductos() {
   renderProductos(filtrados);
 }
 
-// AGREGAR AL CARRITO DESDE LA TARJETA
 function agregarDesdeTarjeta(p) {
   const input = document.getElementById(`cant-${p.id}`);
   const cantidadDeseada = parseInt(input.value);
-
   const item = carrito.find(x => x.id === p.id);
 
   if (item) {
@@ -65,37 +60,31 @@ function agregarDesdeTarjeta(p) {
   } else {
     carrito.push({ ...p, cantidad: cantidadDeseada });
   }
-
   input.value = 1;
   guardarCarrito();
 }
 
-// GUARDAR
 function guardarCarrito() {
   localStorage.setItem('carrito', JSON.stringify(carrito));
   actualizarCarrito();
 }
 
-// ACTUALIZAR UI CARRITO
 function actualizarCarrito() {
   const totalArticulos = carrito.reduce((sum, item) => sum + item.cantidad, 0);
   document.getElementById('contador').innerText = totalArticulos;
 
   const lista = document.getElementById('listaCarrito');
   lista.innerHTML = '';
-
   let total = 0;
 
   carrito.forEach(p => {
     total += p.precio * p.cantidad;
-
     lista.innerHTML += `
       <div class="item-carrito">
         <div class="item-info">
           <strong>${p.nombre}</strong>
           <span>$${parseFloat(p.precio).toFixed(2)} c/u</span>
         </div>
-        
         <div class="item-controles">
           <div class="btn-group">
             <button onclick="restarCantidad(${p.id})">-</button>
@@ -107,27 +96,20 @@ function actualizarCarrito() {
       </div>
     `;
   });
-
   document.getElementById('total').innerText = `Total: $${total.toFixed(2)}`;
 }
 
 function sumarCantidad(id) {
   const item = carrito.find(x => x.id === id);
-  if (item) {
-    item.cantidad++;
-    guardarCarrito();
-  }
+  if (item) { item.cantidad++; guardarCarrito(); }
 }
 
 function restarCantidad(id) {
   const item = carrito.find(x => x.id === id);
   if (item) {
     item.cantidad--;
-    if (item.cantidad <= 0) {
-      eliminarItem(id);
-    } else {
-      guardarCarrito();
-    }
+    if (item.cantidad <= 0) eliminarItem(id);
+    else guardarCarrito();
   }
 }
 
@@ -143,21 +125,14 @@ function toggleCarrito() {
 }
 
 function enviarWhatsApp() {
-  if (carrito.length === 0) {
-    alert("Tu carrito está vacío.");
-    return;
-  }
-
-  let msg = "🛒 *Cotización de Productos:*\n\n";
+  if (carrito.length === 0) { alert("Tu carrito está vacío."); return; }
+  let msg = "🛒 *Cotización de Productos:*\\n\\n";
   carrito.forEach(p => {
-    msg += `▪️ ${p.nombre} (x${p.cantidad}) - $${(p.precio * p.cantidad).toFixed(2)}\n`;
+    msg += `▪️ ${p.nombre} (x${p.cantidad}) - $${(p.precio * p.cantidad).toFixed(2)}\\n`;
   });
-
   const total = carrito.reduce((sum, p) => sum + p.precio * p.cantidad, 0);
-  msg += `\n*Total a pagar: $${total.toFixed(2)}*`;
-
-  const numero = "503XXXXXXXX"; // Cambia por tu número real
-  window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`);
+  msg += `\\n*Total a pagar: $${total.toFixed(2)}*`;
+  window.open(`https://wa.me/503XXXXXXXX?text=${encodeURIComponent(msg)}`);
 }
 
 cargarProductos();

@@ -1,115 +1,263 @@
-/* =========================================
-   Estilos Globales - LaColo Dev Theme
-   ========================================= */
 :root {
-  /* Paleta de Marca: Rose Gold & Champagne */
+  /* Paleta Premium */
   --rose-gold: #B76E79;
   --rose-gold-oscuro: #9A5A64;
   --champagne: #F7E7CE;
   --champagne-oscuro: #E5D0B1;
-  
-  --color-fondo: #FCFBFA; /* Blanco cálido */
+  --color-fondo: #FCFBFA;
   --color-texto: #2D2D2D;
-  --color-texto-mutado: #6C757D;
   --bg-tarjeta: #FFFFFF;
-  
-  --fuente-principal: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  --sombra-suave: 0 8px 24px rgba(183, 110, 121, 0.08);
-  --sombra-fuerte: 0 12px 32px rgba(183, 110, 121, 0.15);
 }
 
 body {
-  background-color: var(--color-fondo);
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: var(--color-fondo);
   color: var(--color-texto);
-  font-family: var(--fuente-principal);
   -webkit-font-smoothing: antialiased;
 }
 
-/* =========================================
-   Tarjetas de Productos (Sobrescribiendo Bootstrap)
-   ========================================= */
+/* HEADER */
+.header {
+  background: var(--rose-gold);
+  color: white;
+  padding: 15px 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  box-shadow: 0 4px 12px rgba(183, 110, 121, 0.2);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.header input {
+  flex: 1;
+  max-width: 500px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  border: 1px solid var(--champagne-oscuro);
+  outline: none;
+  font-size: 1rem;
+}
+
+.header input:focus {
+  box-shadow: 0 0 0 3px rgba(247, 231, 206, 0.5);
+}
+
+/* GRID Y TARJETAS */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 25px;
+  padding: 30px;
+}
+
 .card {
-  border: 1px solid rgba(247, 231, 206, 0.5); /* Borde sutil champagne */
+  background: var(--bg-tarjeta);
+  border: 1px solid rgba(247, 231, 206, 0.6);
   border-radius: 16px;
-  background-color: var(--bg-tarjeta);
-  box-shadow: var(--sombra-suave);
+  padding: 20px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(183, 110, 121, 0.05);
+  display: flex;
+  flex-direction: column;
 }
 
 .card:hover {
   transform: translateY(-6px);
-  box-shadow: var(--sombra-fuerte);
+  box-shadow: 0 12px 32px rgba(183, 110, 121, 0.15);
 }
 
-.card-body h5 {
-  font-weight: 600;
-  color: var(--color-texto);
-  margin-bottom: 0.5rem;
+.card h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.2rem;
 }
 
-.text-success {
-  color: var(--rose-gold-oscuro) !important; /* Reemplaza el verde genérico */
-  font-size: 1.15rem;
-}
-
-/* =========================================
-   Botones
-   ========================================= */
-.btn-primary {
-  background-color: var(--rose-gold);
-  border-color: var(--rose-gold);
-  color: #fff;
-  border-radius: 10px;
-  font-weight: 600;
-  padding: 0.6rem 1.2rem;
-  transition: all 0.2s ease-in-out;
-}
-
-.btn-primary:hover, 
-.btn-primary:focus, 
-.btn-primary:active {
-  background-color: var(--rose-gold-oscuro) !important;
-  border-color: var(--rose-gold-oscuro) !important;
-  box-shadow: 0 4px 12px rgba(183, 110, 121, 0.3) !important;
-}
-
-/* =========================================
-   Buscador y Navbar (Opcional)
-   ========================================= */
-.form-control {
-  border-radius: 10px;
-  border: 1px solid var(--champagne-oscuro);
-  padding: 0.6rem 1rem;
-}
-
-.form-control:focus {
-  border-color: var(--rose-gold);
-  box-shadow: 0 0 0 0.25rem rgba(183, 110, 121, 0.25);
-}
-
-/* =========================================
-   Panel del Carrito (Flotante)
-   ========================================= */
-#carrito {
-  background-color: var(--bg-tarjeta);
-  border-left: 4px solid var(--rose-gold);
-  box-shadow: -5px 0 25px rgba(0,0,0,0.05);
-  /* Asegúrate de tener estas clases manejadas en tu JS para abrir/cerrar */
-}
-
-/* Botón flotante de WhatsApp o Finalizar Compra */
-.btn-whatsapp {
-  background-color: #25D366; /* Verde de WhatsApp original */
-  color: white;
+.price {
+  font-size: 1.5rem;
+  color: var(--rose-gold-oscuro);
   font-weight: bold;
-  border-radius: 10px;
-  padding: 0.8rem;
-  width: 100%;
-  border: none;
-  transition: background-color 0.2s;
+  margin: 0 0 5px 0;
 }
 
-.btn-whatsapp:hover {
-  background-color: #1EBE5D;
+.stock {
+  font-size: 0.9rem;
+  color: #888;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+/* CONTROLES DE LA TARJETA */
+.controles-agregar {
+  display: flex;
+  gap: 10px;
+  margin-top: auto; /* Empuja los botones al fondo de la tarjeta */
+}
+
+.input-cantidad {
+  width: 60px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--champagne-oscuro);
+  text-align: center;
+  font-weight: bold;
+}
+
+.btn {
+  flex: 1;
+  padding: 10px;
+  background: var(--rose-gold);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.btn:hover {
+  background: var(--rose-gold-oscuro);
+}
+
+/* CARRITO LATERAL */
+.carrito {
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 350px;
+  height: 100vh;
+  background: var(--bg-tarjeta);
+  padding: 25px;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: -5px 0 25px rgba(0,0,0,0.1);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.carrito-cerrado {
+  transform: translateX(105%);
+}
+
+.carrito-abierto {
+  transform: translateX(0);
+}
+
+.cart-btn {
+  background: transparent;
+  border: 2px solid white;
+  border-radius: 8px;
+  padding: 8px 15px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1rem;
+  transition: 0.2s;
+}
+
+.cart-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ITEMS DENTRO DEL CARRITO */
+#listaCarrito {
+  flex: 1;
+  overflow-y: auto;
+  margin-bottom: 20px;
+}
+
+.item-carrito {
+  display: flex;
+  flex-direction: column;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--champagne);
+  gap: 10px;
+}
+
+.item-info {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.95rem;
+}
+
+.item-controles {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-group {
+  display: flex;
+  align-items: center;
+  background: #f0f0f0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.btn-group button {
+  background: none;
+  border: none;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.btn-group button:hover {
+  background: #e0e0e0;
+}
+
+.cantidad-display {
+  padding: 0 10px;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+
+.btn-eliminar {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  opacity: 0.7;
+  transition: 0.2s;
+}
+
+.btn-eliminar:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+/* BOTONES FINALES DEL CARRITO */
+#carrito h3 {
+  text-align: right;
+  color: var(--rose-gold-oscuro);
+  font-size: 1.4rem;
+  margin-bottom: 15px;
+}
+
+.carrito button[onclick="enviarWhatsApp()"] {
+  background: #25D366;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.carrito button[onclick="toggleCarrito()"] {
+  background: transparent;
+  color: var(--color-texto);
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  cursor: pointer;
 }

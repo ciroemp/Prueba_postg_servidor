@@ -11,6 +11,7 @@ Proyecto experimento para conectar una pagina a un servidor de base de datos.
 - PostgreSQL
 - JavaScript
 - HTML + CSS
+- dotenv
 
 ## 📁 Estructura
 - /routes → endpoints API

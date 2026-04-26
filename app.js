@@ -18,17 +18,16 @@ function renderProductos(productos) {
 
   productos.forEach(p => {
     cont.innerHTML += `
-      <div class="col-md-3 mb-3">
-        <div class="card shadow-sm">
-          <div class="card-body">
-            <h5>${p.nombre}</h5>
-            <p class="text-success fw-bold">$${parseFloat(p.precio).toFixed(2)}</p>
-            <p>Stock: ${p.stock}</p>
-
-            <button class="btn btn-primary w-100" onclick='agregar(${JSON.stringify(p)})'>
-              Agregar
-            </button>
-          </div>
+      <div class="card">
+        <h3>${p.nombre}</h3>
+        <p class="price">$${parseFloat(p.precio).toFixed(2)}</p>
+        <p class="stock">Stock disponible: ${p.stock}</p>
+        
+        <div class="controles-agregar">
+          <input type="number" id="cant-${p.id}" value="1" min="1" max="${p.stock}" class="input-cantidad">
+          <button class="btn" onclick='agregarDesdeTarjeta(${JSON.stringify(p)})'>
+            Agregar
+          </button>
         </div>
       </div>
     `;
@@ -44,13 +43,22 @@ function filtrarProductos() {
   renderProductos(filtrados);
 }
 
-// AGREGAR AL CARRITO
-function agregar(p) {
+// AGREGAR AL CARRITO DESDE LA TARJETA
+function agregarDesdeTarjeta(p) {
+  const input = document.getElementById(`cant-${p.id}`);
+  const cantidadDeseada = parseInt(input.value);
+
   const item = carrito.find(x => x.id === p.id);
 
-  if (item) item.cantidad++;
-  else carrito.push({ ...p, cantidad: 1 });
+  if (item) {
+    // Suma la cantidad nueva a la que ya estaba en el carrito
+    item.cantidad += cantidadDeseada;
+  } else {
+    carrito.push({ ...p, cantidad: cantidadDeseada });
+  }
 
+  // Reinicia el input a 1 por comodidad visual
+  input.value = 1;
   guardarCarrito();
 }
 
@@ -62,7 +70,9 @@ function guardarCarrito() {
 
 // ACTUALIZAR UI CARRITO
 function actualizarCarrito() {
-  document.getElementById('contador').innerText = carrito.length;
+  // El contador ahora suma el total de artículos, no solo las filas
+  const totalArticulos = carrito.reduce((sum, item) => sum + item.cantidad, 0);
+  document.getElementById('contador').innerText = totalArticulos;
 
   const lista = document.getElementById('listaCarrito');
   lista.innerHTML = '';
@@ -73,39 +83,79 @@ function actualizarCarrito() {
     total += p.precio * p.cantidad;
 
     lista.innerHTML += `
-      <p>${p.nombre} x${p.cantidad}</p>
+      <div class="item-carrito">
+        <div class="item-info">
+          <strong>${p.nombre}</strong>
+          <span>$${parseFloat(p.precio).toFixed(2)} c/u</span>
+        </div>
+        
+        <div class="item-controles">
+          <div class="btn-group">
+            <button onclick="restarCantidad(${p.id})">-</button>
+            <span class="cantidad-display">${p.cantidad}</span>
+            <button onclick="sumarCantidad(${p.id})">+</button>
+          </div>
+          <button class="btn-eliminar" onclick="eliminarItem(${p.id})">🗑️</button>
+        </div>
+      </div>
     `;
   });
 
   document.getElementById('total').innerText = `Total: $${total.toFixed(2)}`;
 }
 
+// NUEVAS FUNCIONES DE CONTROL DEL CARRITO
+function sumarCantidad(id) {
+  const item = carrito.find(x => x.id === id);
+  if (item) {
+    item.cantidad++;
+    guardarCarrito();
+  }
+}
+
+function restarCantidad(id) {
+  const item = carrito.find(x => x.id === id);
+  if (item) {
+    item.cantidad--;
+    if (item.cantidad <= 0) {
+      eliminarItem(id); // Si llega a 0, lo quita del carrito
+    } else {
+      guardarCarrito();
+    }
+  }
+}
+
+function eliminarItem(id) {
+  carrito = carrito.filter(x => x.id !== id);
+  guardarCarrito();
+}
+
 // MOSTRAR / OCULTAR CARRITO
-
 function toggleCarrito() {
-  const carrito = document.getElementById('carrito');
-
-  carrito.classList.toggle('carrito-abierto');
-  carrito.classList.toggle('carrito-cerrado');
+  const carritoDiv = document.getElementById('carrito');
+  carritoDiv.classList.toggle('carrito-abierto');
+  carritoDiv.classList.toggle('carrito-cerrado');
 }
 
 // WHATSAPP
 function enviarWhatsApp() {
-  let msg = "🛒 Cotización:\n\n";
+  if (carrito.length === 0) {
+    alert("Tu carrito está vacío.");
+    return;
+  }
+
+  let msg = "🛒 *Cotización de Productos:*\n\n";
 
   carrito.forEach(p => {
-    msg += `${p.nombre} x${p.cantidad} - $${p.precio}\n`;
+    msg += `▪️ ${p.nombre} (x${p.cantidad}) - $${(p.precio * p.cantidad).toFixed(2)}\n`;
   });
 
   const total = carrito.reduce((sum, p) => sum + p.precio * p.cantidad, 0);
 
-  msg += `\nTotal: $${total.toFixed(2)}`;
+  msg += `\n*Total a pagar: $${total.toFixed(2)}*`;
 
-  const numero = "503XXXXXXXX";
-
+  const numero = "503XXXXXXXX"; // Recuerda cambiar esto
   window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`);
 }
-
-
 
 cargarProductos();

@@ -11,23 +11,31 @@ async function cargarProductos() {
   actualizarCarrito();
 }
 
-// RENDER PRODUCTOS
+// RENDER PRODUCTOS - CORREGIDO PARA MOSTRAR IMÁGENES
 function renderProductos(productos) {
   const cont = document.getElementById('productos');
   cont.innerHTML = '';
 
   productos.forEach(p => {
+    // Si p.imagen_url no existe, intenta usar una ruta por defecto
+    const rutaImagen = p.imagen_url ? p.imagen_url : 'public/img/placeholder.jpg';
+
     cont.innerHTML += `
       <div class="card">
-        <h3>${p.nombre}</h3>
-        <p class="price">$${parseFloat(p.precio).toFixed(2)}</p>
-        <p class="stock">Stock disponible: ${p.stock}</p>
-        
-        <div class="controles-agregar">
-          <input type="number" id="cant-${p.id}" value="1" min="1" max="${p.stock}" class="input-cantidad">
-          <button class="btn" onclick='agregarDesdeTarjeta(${JSON.stringify(p)})'>
-            Agregar
-          </button>
+        <div class="img-container">
+          <img src="${rutaImagen}" alt="${p.nombre}" class="card-img" onerror="this.src='public/img/placeholder.jpg'">
+        </div>
+        <div class="card-body">
+          <h3>${p.nombre}</h3>
+          <p class="price">$${parseFloat(p.precio).toFixed(2)}</p>
+          <p class="stock">Stock disponible: ${p.stock}</p>
+          
+          <div class="controles-agregar">
+            <input type="number" id="cant-${p.id}" value="1" min="1" max="${p.stock}" class="input-cantidad">
+            <button class="btn" onclick='agregarDesdeTarjeta(${JSON.stringify(p)})'>
+              Agregar
+            </button>
+          </div>
         </div>
       </div>
     `;
@@ -51,13 +59,11 @@ function agregarDesdeTarjeta(p) {
   const item = carrito.find(x => x.id === p.id);
 
   if (item) {
-    // Suma la cantidad nueva a la que ya estaba en el carrito
     item.cantidad += cantidadDeseada;
   } else {
     carrito.push({ ...p, cantidad: cantidadDeseada });
   }
 
-  // Reinicia el input a 1 por comodidad visual
   input.value = 1;
   guardarCarrito();
 }
@@ -70,7 +76,6 @@ function guardarCarrito() {
 
 // ACTUALIZAR UI CARRITO
 function actualizarCarrito() {
-  // El contador ahora suma el total de artículos, no solo las filas
   const totalArticulos = carrito.reduce((sum, item) => sum + item.cantidad, 0);
   document.getElementById('contador').innerText = totalArticulos;
 
@@ -104,7 +109,6 @@ function actualizarCarrito() {
   document.getElementById('total').innerText = `Total: $${total.toFixed(2)}`;
 }
 
-// NUEVAS FUNCIONES DE CONTROL DEL CARRITO
 function sumarCantidad(id) {
   const item = carrito.find(x => x.id === id);
   if (item) {
@@ -118,7 +122,7 @@ function restarCantidad(id) {
   if (item) {
     item.cantidad--;
     if (item.cantidad <= 0) {
-      eliminarItem(id); // Si llega a 0, lo quita del carrito
+      eliminarItem(id);
     } else {
       guardarCarrito();
     }
@@ -130,14 +134,12 @@ function eliminarItem(id) {
   guardarCarrito();
 }
 
-// MOSTRAR / OCULTAR CARRITO
 function toggleCarrito() {
   const carritoDiv = document.getElementById('carrito');
   carritoDiv.classList.toggle('carrito-abierto');
   carritoDiv.classList.toggle('carrito-cerrado');
 }
 
-// WHATSAPP
 function enviarWhatsApp() {
   if (carrito.length === 0) {
     alert("Tu carrito está vacío.");
@@ -145,16 +147,14 @@ function enviarWhatsApp() {
   }
 
   let msg = "🛒 *Cotización de Productos:*\n\n";
-
   carrito.forEach(p => {
     msg += `▪️ ${p.nombre} (x${p.cantidad}) - $${(p.precio * p.cantidad).toFixed(2)}\n`;
   });
 
   const total = carrito.reduce((sum, p) => sum + p.precio * p.cantidad, 0);
-
   msg += `\n*Total a pagar: $${total.toFixed(2)}*`;
 
-  const numero = "503XXXXXXXX"; // Recuerda cambiar esto
+  const numero = "503XXXXXXXX"; // Cambia por tu número real
   window.open(`https://wa.me/${numero}?text=${encodeURIComponent(msg)}`);
 }
 

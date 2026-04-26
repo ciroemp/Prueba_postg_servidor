@@ -14,8 +14,8 @@ function renderProductos(productos) {
   cont.innerHTML = '';
 
   productos.forEach(p => {
-    // Si p.imagen_url no existe, intenta usar una ruta por defecto
-    const rutaImagen = p.imagen_url ? p.imagen_url : 'public/img/placeholder.jpg';
+    // Definimos la ruta de la imagen o el placeholder si no existe
+    const imgPath = p.imagen_url ? p.imagen_url : 'public/img/placeholder.jpg';
 
     cont.innerHTML += `
       <div class="card">
@@ -41,6 +41,7 @@ function renderProductos(productos) {
     `;
   });
 }
+
 // BUSCADOR
 function filtrarProductos() {
   const texto = document.getElementById('buscador').value.toLowerCase();
@@ -78,25 +79,30 @@ function actualizarCarrito() {
   let total = 0;
 
   carrito.forEach(p => {
-    total += p.precio * p.cantidad;
+    const subtotal = p.precio * p.cantidad;
+    total += subtotal;
+
     lista.innerHTML += `
       <div class="item-carrito">
         <div class="item-info">
           <strong>${p.nombre}</strong>
           <span>$${parseFloat(p.precio).toFixed(2)} c/u</span>
         </div>
+        
         <div class="item-controles">
           <div class="btn-group">
-            <button onclick="restarCantidad(${p.id})">-</button>
+            <button onclick="restarCantidad(${p.id})">−</button>
             <span class="cantidad-display">${p.cantidad}</span>
             <button onclick="sumarCantidad(${p.id})">+</button>
           </div>
-          <button class="btn-eliminar" onclick="eliminarItem(${p.id})">🗑️</button>
+          <button class="btn-eliminar" onclick="eliminarItem(${p.id})" title="Eliminar">
+            🗑️
+          </button>
         </div>
       </div>
     `;
   });
-  document.getElementById('total').innerText = `Total: $${total.toFixed(2)}`;
+document.getElementById('total').innerText = `Total: $${total.toFixed(2)}`;
 }
 
 function sumarCantidad(id) {

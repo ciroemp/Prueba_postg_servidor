@@ -36,6 +36,27 @@ app.get('/productos', async (req, res) => {
   }
 });
 
+// 👉 Ruta API para AGREGAR un nuevo producto
+app.post('/productos', async (req, res) => {
+  try {
+    // Recibimos "imagen" desde el frontend
+    const { nombre, precio, stock, categoria, imagen } = req.body;
+    
+    // Si olvidaste llenar la casilla, le ponemos el placeholder por defecto
+    const nombreImagen = imagen ? imagen : 'placeholder.jpg'; 
+
+    const result = await db.query(
+      'INSERT INTO productos (nombre, precio, stock, categoria, imagen) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+      [nombre, precio, stock, categoria, nombreImagen]
+    );
+
+    res.json({ mensaje: 'Producto agregado con éxito', producto: result.rows[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error al guardar en la base de datos');
+  }
+});
+
 // 👉 Levantar servidor
 app.listen(3000, () => {
   console.log('Servidor en http://localhost:3000');

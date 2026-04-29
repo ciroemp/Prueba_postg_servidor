@@ -1,16 +1,79 @@
+// Variable para la ruta de la API y almacenamiento global
 const API = '/productos';
 let productosGlobal = [];
 let carrito = JSON.parse(localStorage.getItem('carrito')) || [];
 
-async function cargarProductos() {
-  const res = await fetch(API);
-  productosGlobal = await res.json();
-  renderProductos(productosGlobal);
-  actualizarCarrito();
+/**
+ * FUNCIÓN AUXILIAR: VERIFICAR IMAGEN
+ * Crea una imagen en memoria para comprobar si existe antes de mostrarla.
+ * @param {string} url - La ruta de la imagen a verificar.
+ * @returns {Promise<boolean>} - true si carga, false si falla (ej. 404).
+ */
+function verificarImagen(url) {
+  return new Promise((resolve) => {
+    // Si no hay URL o es el placeholder, no cuenta como carga exitosa
+    if (!url || url.includes('placeholder.jpg')) {
+      resolve(false);
+      return;
+    }
+
+    const img = new Image(); 
+    img.onload = () => resolve(true);   // La imagen existe y cargó bien
+    img.onerror = () => resolve(false); // La imagen no existe
+    img.src = url; 
+  });
 }
 
+/**
+ * FUNCIÓN CARGAR PRODUCTOS
+ * Se conecta a la API, verifica físicamente las imágenes, ordena y muestra.
+ */
+async function cargarProductos() {
+  try {
+    const res = await fetch(API);
+    const data = await res.json();
+
+    // 1. Verificamos cada imagen usando Promise.all para hacerlo en paralelo
+    const productosVerificados = await Promise.all(data.map(async (p) => {
+      // Determinamos la ruta que intentaremos cargar
+      const imgPath = p.imagen_url ? p.imagen_url : 'public/img/placeholder.jpg';
+      
+      // Llamamos a nuestra función exploradora
+      const cargaExitosa = await verificarImagen(imgPath);
+      
+      // Devolvemos el producto con una nueva propiedad 'cargaExitosa'
+      return {
+        ...p,
+        cargaExitosa: cargaExitosa 
+      };
+    }));
+
+    // 2. Lógica de ordenamiento basada en carga real
+    productosVerificados.sort((a, b) => {
+      if (a.cargaExitosa && !b.cargaExitosa) return -1; // 'a' sube
+      if (!a.cargaExitosa && b.cargaExitosa) return 1;  // 'b' sube
+      return 0; // Se mantienen igual
+    });
+
+    // Guardamos el array ya ordenado globalmente
+    productosGlobal = productosVerificados;
+
+    // Dibujamos los productos y actualizamos el estado del carrito
+    renderProductos(productosGlobal);
+    actualizarCarrito();
+
+  } catch (error) {
+    console.error("Error al cargar la tienda:", error);
+  }
+}
+
+/**
+ * FUNCIÓN RENDER PRODUCTOS
+ * Crea las tarjetas de la tienda dinámicamente.
+ */
 function renderProductos(productos) {
   const cont = document.getElementById('productos');
+  if (!cont) return;
   cont.innerHTML = '';
 
   productos.forEach(p => {
@@ -42,7 +105,10 @@ function renderProductos(productos) {
   });
 }
 
-// BUSCADOR
+/**
+ * FUNCIÓN FILTRAR (BUSCADOR)
+ * Filtra sobre el array 'productosGlobal' que ya está ordenado.
+ */
 function filtrarProductos() {
   const texto = document.getElementById('buscador').value.toLowerCase();
   const filtrados = productosGlobal.filter(p =>
@@ -50,6 +116,8 @@ function filtrarProductos() {
   );
   renderProductos(filtrados);
 }
+
+// --- LÓGICA DEL CARRITO (Se mantiene igual) ---
 
 function agregarDesdeTarjeta(p) {
   const input = document.getElementById(`cant-${p.id}`);
@@ -72,9 +140,11 @@ function guardarCarrito() {
 
 function actualizarCarrito() {
   const totalArticulos = carrito.reduce((sum, item) => sum + item.cantidad, 0);
-  document.getElementById('contador').innerText = totalArticulos;
+  const contador = document.getElementById('contador');
+  if (contador) contador.innerText = totalArticulos;
 
   const lista = document.getElementById('listaCarrito');
+  if (!lista) return;
   lista.innerHTML = '';
   let total = 0;
 
@@ -88,21 +158,20 @@ function actualizarCarrito() {
           <strong>${p.nombre}</strong>
           <span>$${parseFloat(p.precio).toFixed(2)} c/u</span>
         </div>
-        
         <div class="item-controles">
           <div class="btn-group">
             <button onclick="restarCantidad(${p.id})">−</button>
             <span class="cantidad-display">${p.cantidad}</span>
             <button onclick="sumarCantidad(${p.id})">+</button>
           </div>
-          <button class="btn-eliminar" onclick="eliminarItem(${p.id})" title="Eliminar">
-            🗑️
-          </button>
+          <button class="btn-eliminar" onclick="eliminarItem(${p.id})" title="Eliminar">🗑️</button>
         </div>
       </div>
     `;
   });
-document.getElementById('total').innerText = `Total: $${total.toFixed(2)}`;
+
+  const totalElem = document.getElementById('total');
+  if (totalElem) totalElem.innerText = `Total: $${total.toFixed(2)}`;
 }
 
 function sumarCantidad(id) {
@@ -126,19 +195,23 @@ function eliminarItem(id) {
 
 function toggleCarrito() {
   const carritoDiv = document.getElementById('carrito');
-  carritoDiv.classList.toggle('carrito-abierto');
-  carritoDiv.classList.toggle('carrito-cerrado');
+  if (carritoDiv) {
+    carritoDiv.classList.toggle('carrito-abierto');
+    carritoDiv.classList.toggle('carrito-cerrado');
+  }
 }
 
 function enviarWhatsApp() {
   if (carrito.length === 0) { alert("Tu carrito está vacío."); return; }
-  let msg = "🛒 *Cotización de Productos:*\\n\\n";
+  let msg = "🛒 *Cotización de Productos:*\n\n";
   carrito.forEach(p => {
-    msg += `▪️ ${p.nombre} (x${p.cantidad}) - $${(p.precio * p.cantidad).toFixed(2)}\\n`;
+    msg += `▪️ ${p.nombre} (x${p.cantidad}) - $${(p.precio * p.cantidad).toFixed(2)}\n`;
   });
   const total = carrito.reduce((sum, p) => sum + p.precio * p.cantidad, 0);
-  msg += `\\n*Total a pagar: $${total.toFixed(2)}*`;
+  msg += `\n*Total a pagar: $${total.toFixed(2)}*`;
+  // Reemplaza con tu número real de WhatsApp
   window.open(`https://wa.me/503XXXXXXXX?text=${encodeURIComponent(msg)}`);
 }
 
+// Ejecución inicial
 cargarProductos();

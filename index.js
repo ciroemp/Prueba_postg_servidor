@@ -2,39 +2,46 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const db = require('./routes/Services/db');
+
+// NUEVO: Importamos herramientas para verificar archivos físicos
+const fs = require('fs');
+const path = require('path');
+
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
 
-// 1. OBTENER PRODUCTOS
+// 1. OBTENER PRODUCTOS (Actualizado con validación de archivos)
 app.get('/productos', async (req, res) => {
   try {
     const result = await db.query('SELECT * FROM productos ORDER BY id DESC');
-    const productosConImagen = result.rows.map(p => ({
-      ...p,
-      imagen_url: p.imagen ? `${process.env.URL_IMAGENES}${p.imagen}` : `${process.env.URL_IMAGENES}placeholder.jpg`
-    }));
+    
+    const productosConImagen = result.rows.map(p => {
+      // Por defecto, asumimos que no tiene imagen válida
+      let urlFinal = '/public/img/placeholder.jpg';
+
+      if (p.imagen) {
+        // Construimos la ruta exacta en tu computadora donde debería estar la foto
+        const rutaFisica = path.join(__dirname, 'public', 'img', p.imagen);
+        
+        // Verificamos si el archivo realmente existe en esa carpeta
+        if (fs.existsSync(rutaFisica)) {
+          urlFinal = `/public/img/${p.imagen}`;
+        }
+      }
+
+      return {
+        ...p,
+        imagen_url: urlFinal
+      };
+    });
+
     res.json(productosConImagen);
   } catch (error) {
+    console.error("Error al obtener productos:", error);
     res.status(500).send('Error al obtener productos');
-  }
-});
-
- // listar productos
-app.get('/productos', async (req, res) => {
-  try {
-    const result = await db.query('SELECT * FROM productos ORDER BY id DESC');
-    const productos = result.rows.map(p => ({
-      ...p,
-      // Construimos la URL; si no hay imagen, usamos el placeholder
-      imagen_url: p.imagen ? `${process.env.URL_IMAGENES}${p.imagen}` : `${process.env.URL_IMAGENES}placeholder.jpg`
-    }));
-    res.json(productos);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error al obtener el inventario');
   }
 });
 
@@ -52,19 +59,22 @@ app.post('/productos', async (req, res) => {
   }
 });
 
-// 3. EDITAR PRODUCTO
+// 3. EDITAR PRODUCTO (Actualizado para guardar la imagen)
 app.put('/productos/:id', async (req, res) => {
   const { id } = req.params;
-  const { nombre, precio, stock, categoria } = req.body;
+  // Extraemos también la variable 'imagen' que enviaremos desde el navegador
+  const { nombre, precio, stock, categoria, imagen } = req.body;
   if (req.headers.rol !== 'admin') return res.status(403).send('No autorizado');
   
   try {
+    // Agregamos imagen=$5 a la consulta SQL y movemos el id a $6
     await db.query(
-      'UPDATE productos SET nombre=$1, precio=$2, stock=$3, categoria=$4 WHERE id=$5',
-      [nombre, precio, stock, categoria, id]
+      'UPDATE productos SET nombre=$1, precio=$2, stock=$3, categoria=$4, imagen=$5 WHERE id=$6',
+      [nombre, precio, stock, categoria, imagen, id]
     );
     res.json({ mensaje: 'Actualizado' });
   } catch (error) {
+    console.error(error);
     res.status(500).send('Error al editar');
   }
 });
@@ -78,6 +88,26 @@ app.delete('/productos/:id', async (req, res) => {
     res.json({ mensaje: 'Eliminado' });
   } catch (error) {
     res.status(500).send('Error al eliminar');
+  }
+});
+
+// 5. EDITAR CATEGORÍAS MASIVAMENTE
+app.put('/categorias/:vieja', async (req, res) => {
+  const { vieja } = req.params;
+  const { nueva } = req.body;
+  
+  if (req.headers.rol !== 'admin') return res.status(403).send('No autorizado');
+  
+  try {
+    // Busca todos los productos con la categoría vieja y les pone la nueva
+    await db.query(
+      'UPDATE productos SET categoria = $1 WHERE categoria = $2',
+      [nueva, vieja]
+    );
+    res.json({ mensaje: 'Categoría actualizada en todos los productos' });
+  } catch (error) {
+    console.error("Error al actualizar categoría:", error);
+    res.status(500).send('Error al actualizar categoría');
   }
 });
 

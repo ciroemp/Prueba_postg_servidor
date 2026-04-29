@@ -1,3 +1,5 @@
+// public/js/productos.js
+
 async function cargarProductos() {
   try {
     const res = await fetch('http://localhost:3000/productos');

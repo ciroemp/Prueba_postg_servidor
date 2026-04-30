@@ -1,7 +1,11 @@
+
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const db = require('./routes/Services/db');
+
 
 // NUEVO: Importamos herramientas para verificar archivos físicos
 const fs = require('fs');
@@ -12,6 +16,47 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static(__dirname));
+
+// --- RUTA DE AUTENTICACIÓN ---
+// --- RUTA DE AUTENTICACIÓN ---
+app.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+    // 1. Verificar si el usuario existe en la tabla
+    const result = await db.query('SELECT * FROM usuarios WHERE username = $1', [username]);
+    
+    if (result.rows.length === 0) {
+      return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+    }
+
+    const usuario = result.rows[0];
+
+    // 2. Comparar la contraseña plana con el hash de la base de datos
+    const passwordValida = await bcrypt.compare(password, usuario.password);
+    
+    if (!passwordValida) {
+      return res.status(401).json({ error: 'Usuario o contraseña incorrectos' });
+    }
+
+    // 3. Generar el Token (Pase VIP) que dura 2 horas
+    const token = jwt.sign(
+      { id: usuario.id, username: usuario.username, rol: usuario.rol },
+      process.env.JWT_SECRET,
+      { expiresIn: '2h' }
+    );
+
+    // Respondemos con el token
+    res.json({ 
+      mensaje: 'Autenticación exitosa', 
+      token: token 
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
 
 // 1. OBTENER PRODUCTOS (Actualizado con validación de archivos)
 app.get('/productos', async (req, res) => {

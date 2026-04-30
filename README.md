@@ -12,6 +12,7 @@ Proyecto experimento para conectar una pagina a un servidor de base de datos.
 - JavaScript
 - HTML + CSS
 - dotenv
+- bcryptjs 
 
 ## 📁 Estructura
 - /routes → endpoints API
@@ -110,3 +111,18 @@ INSERT INTO productos(nombre, precio, stock, categoria, imagen) VALUES
 ('Manguera', 20, 10, 'Jardin', 'manguera.jpg'),
 ('Guantes', 6, 25, 'Seguridad', 'guantes.jpg'),
 ('Casco', 18, 12, 'Seguridad', 'casco.jpg');
+
+
+
+CREATE TABLE usuarios (
+  id SERIAL PRIMARY KEY,
+  username VARCHAR(50) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  rol VARCHAR(20) DEFAULT 'admin'
+);
+
+- * Instalar las herramientas de seguridad
+
+npm install bcryptjs jsonwebtoken
+
+JWT_SECRET=prueba_8358

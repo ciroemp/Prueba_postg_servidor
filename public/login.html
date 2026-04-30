@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Login - Ferretería Pro</title>
+  <link rel="stylesheet" href="css/styles.css"> <!-- Asegúrate de que la ruta a tu CSS sea correcta -->
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: var(--color-fondo);
+    }
+    .login-container {
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 350px;
+      text-align: center;
+    }
+    .login-container input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    .btn-login {
+      background: var(--rose-gold);
+      color: rgb(158, 62, 62);
+      border: none;
+      padding: 10px;
+      width: 100%;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <h2 style="color: var(--color-texto);">Acceso Restringido</h2>
+    <p style="color: #666; font-size: 0.9rem;">Panel de Administración</p>
+    
+    <form id="form-login">
+      <input type="text" id="username" placeholder="Usuario" required>
+      <input type="password" id="password" placeholder="Contraseña" required>
+      <button type="submit" class="btn-login">Entrar</button>
+    </form>
+    
+    <p id="mensaje-error" style="color: red; display: none; font-size: 0.9rem; margin-top: 15px;"></p>
+  </div>
+
+  <script>
+    document.getElementById('form-login').addEventListener('submit', async (e) => {
+      e.preventDefault(); // Evitamos que la página se recargue
+      
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const errorDiv = document.getElementById('mensaje-error');
+
+      try {
+        // Llamamos a la ruta que creaste en index.js
+        const res = await fetch('/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          // Si es correcto, guardamos el token en la memoria del navegador
+          localStorage.setItem('tokenAdmin', data.token);
+          // Y lo dejamos pasar al panel
+          window.location.href = '/admin.html'; // Ajusta esta ruta si tu admin.html está en otra carpeta
+        } else {
+          // Si falló, mostramos el error
+          errorDiv.innerText = data.error;
+          errorDiv.style.display = 'block';
+        }
+      } catch (error) {
+        errorDiv.innerText = 'Error de conexión con el servidor';
+        errorDiv.style.display = 'block';
+      }
+    });
+  </script>
+</body>
+</html>

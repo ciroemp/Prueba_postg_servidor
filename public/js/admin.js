@@ -4,6 +4,22 @@ let productosAdmin = [];
 // Variable global para almacenar las categorías extraídas del inventario
 window.categoriasPermitidas = []; 
 
+
+// --- PORTERO DE SEGURIDAD ---
+const token = localStorage.getItem('tokenAdmin');
+
+if (!token) {
+  // Si no hay token guardado, lo redirigimos a la página de login
+  window.location.href = '/public/login.html';
+}
+
+// Opcional: Función para cerrar sesión
+function cerrarSesion() {
+  localStorage.removeItem('tokenAdmin');
+  window.location.href = '/public/login.html';
+}
+// ----------------------------
+
 /**
  * FUNCIÓN CARGAR
  */

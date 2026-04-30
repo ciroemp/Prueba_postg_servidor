@@ -1,0 +1,26 @@
+PRUEBA_POSTG_SERVIDOR/
+├── middleware/
+│   └── auth.js
+├── node_modules/
+├── public/
+│   ├── img/
+│   ├── js/
+│   │   ├── admin.js
+│   │   └── productos.js
+│   └── login.html
+├── routes/
+│   ├── Services/
+│   │   └── db.js
+│   └── productos.js
+├── .env
+├── .gitignore
+├── admin.html
+├── app.js
+├── crearAdmin.js
+├── index.html
+├── index.js
+├── links
+├── package-lock.json
+├── package.json
+├── README.md
+└── styles.css

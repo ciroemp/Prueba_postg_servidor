@@ -1,39 +1,51 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <title>Ferretería Pro</title>
   <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
 
-<header class="header">
-  <h1>🛠️ Ferretería Pro</h1>
+  <header class="header">
+    <!-- Primer nivel -->
+    <div class="header-nav">
+      <h1>🛠️ Ferretería Pro</h1>
+      <input type="text" id="buscador" placeholder="Buscar producto..." oninput="filtrarProductos()">
+      <button class="cart-btn" onclick="toggleCarrito()">
+        🛒 <span id="contador">0</span>
+      </button>
+    </div>
 
-  <input type="text" id="buscador" placeholder="Buscar producto..." oninput="filtrarProductos()">
+    <!-- Segundo nivel -->
+    <div class="header-banner">
+      <img src="./public/img/cabecera.jpg" alt="Cabecera Ferretería">
+    </div>
+  </header>
 
-  <button class="cart-btn" onclick="toggleCarrito()">
-    🛒 <span id="contador">0</span>
-  </button>
-</header>
+  <main>
+    <h1>Productos en tienda</h1>
+    <hr>
+    <div id="productos" class="grid"></div>
+  </main>
 
-<main>
-  <div id="productos" class="grid"></div>
-</main>
+  <!-- Carrito lateral -->
+  <aside id="carrito" class="carrito carrito-cerrado">
+    <h2>Carrito</h2>
+    <div id="listaCarrito"></div>
+    <h3 id="total"></h3>
 
-<!-- Carrito lateral -->
-<aside id="carrito" class="carrito carrito-cerrado">  <h2>Carrito</h2>
-  <div id="listaCarrito"></div>
-  <h3 id="total"></h3>
-
-  <button onclick="enviarWhatsApp()">📲 Cotizar</button>
+    <button onclick="enviarWhatsApp()">📲 Cotizar</button>
 
 
-<br><br>
-<button onclick="toggleCarrito()">Cerrar</button>
+    <br><br>
+    <button onclick="toggleCarrito()">Cerrar</button>
 
-</aside>
+  </aside>
 
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
+
 </html>

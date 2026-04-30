@@ -1,29 +1,60 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <title>Admin - Ferretería Pro</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    .admin-container { padding: 40px; max-width: 800px; margin: auto; }
-    .form-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-    .item-admin { display: flex; justify-content: space-between; padding: 15px; background: white; margin-bottom: 10px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .filtros { margin: 20px 0; display: flex; gap: 10px; align-items: center; }
+    .admin-container {
+      padding: 40px;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .form-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .item-admin {
+      display: flex;
+      justify-content: space-between;
+      padding: 15px;
+      background: white;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .filtros {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
   </style>
 </head>
+
 <body>
   <div class="admin-container">
     <h1>Panel de Administración</h1>
-    
+
     <div class="form-group">
       <input id="nombre" placeholder="Nombre del producto">
       <input id="precio" type="number" placeholder="Precio ($)">
       <input id="stock" type="number" placeholder="Stock inicial">
-      
-      <!-- Cambiamos el input de texto por un select dinámico -->
+
+      <!-- Selector de categoría -->
       <select id="categoria">
         <option value="" disabled selected>Selecciona una categoría...</option>
       </select>
+
+      <!-- NUEVO: Input para escribir una categoría que no existe. Oculto por defecto -->
+      <input id="nueva-categoria-input" placeholder="Escribe la nueva categoría"
+        style="display: none; border-color: var(--rose-gold);">
 
       <input id="imagen" placeholder="Nombre de imagen (ej. martillo.jpg)">
       <button class="btn" onclick="agregar()">Añadir a Inventario</button>
@@ -36,29 +67,20 @@
       <select id="filtroCategoria" onchange="cargar()">
         <option value="todos">Todos los productos</option>
       </select>
-      
+
       <!-- Nuevo botón para editar las categorías -->
-      <button onclick="gestionarCategorias()" style="background: #E5D0B1; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: 10px;">
+      <button onclick="gestionarCategorias()"
+        style="background: #E5D0B1; border: none; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-left: 10px;">
         ✏️ Editar Categorías
       </button>
     </div>
 
     <hr>
 
-    <div class="filtros">
-      <strong>Filtrar por:</strong>
-      <select id="filtroCategoria" onchange="cargar()">
-        <option value="todos">Todos los productos</option>
-        <option value="Herramientas">Herramientas</option>
-        <option value="Electricos">Eléctricos</option>
-        <option value="Materiales">Materiales</option>
-        <option value="Seguridad">Seguridad</option>
-      </select>
-    </div>
-
     <div id="lista"></div>
   </div>
 
   <script src="/public/js/admin.js"></script>
 </body>
+
 </html>

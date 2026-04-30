@@ -71,15 +71,16 @@ function actualizarListasDeCategorias() {
  * Detecta cuando el usuario elige "✨ + Crear nueva categoría..." en el formulario
  */
 document.getElementById('categoria')?.addEventListener('change', function(e) {
+  const inputNueva = document.getElementById('nueva-categoria-input');
+  
   if (e.target.value === 'NUEVA_CAT') {
-    const nueva = prompt("Escribe el nombre de la nueva categoría:");
-    if (nueva && nueva.trim() !== "") {
-      window.categoriasPermitidas.push(nueva.trim());
-      actualizarListasDeCategorias(); // Recargamos visualmente las listas
-      e.target.value = nueva.trim();  // Dejamos seleccionada la que acaba de crear
-    } else {
-      e.target.value = ""; // Si cancela, regresa al estado por defecto
-    }
+    // Si selecciona "crear nueva", mostramos el input para que escriba
+    inputNueva.style.display = 'block';
+    inputNueva.focus(); // Ponemos el cursor ahí automáticamente
+  } else {
+    // Si selecciona una existente, ocultamos el input y lo vaciamos
+    inputNueva.style.display = 'none';
+    inputNueva.value = '';
   }
 });
 
@@ -155,8 +156,14 @@ async function agregar() {
   const nombre = document.getElementById('nombre').value;
   const precio = document.getElementById('precio').value;
   const stock = document.getElementById('stock').value;
-  const categoria = document.getElementById('categoria').value;
   const imagen = document.getElementById('imagen').value;
+  
+  let categoria = document.getElementById('categoria').value;
+  
+  // LOGICA CLAVE: Si eligió crear una nueva, tomamos el valor del input de texto
+  if (categoria === 'NUEVA_CAT') {
+    categoria = document.getElementById('nueva-categoria-input').value.trim();
+  }
 
   if (!nombre || !precio || !stock || !categoria) {
     alert("Nombre, precio, stock y categoría son obligatorios");
@@ -167,16 +174,26 @@ async function agregar() {
     const res = await fetch('/productos', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'rol': 'admin' },
+      // Enviamos el paquete al backend. Si es nueva, se guardará en la BD vinculada a este producto
       body: JSON.stringify({ nombre, precio, stock, categoria, imagen })
     });
 
     if (res.ok) {
+      // Limpieza general
       document.getElementById('nombre').value = '';
       document.getElementById('precio').value = '';
       document.getElementById('stock').value = '';
       document.getElementById('categoria').value = '';
       document.getElementById('imagen').value = '';
-      cargar(); 
+      
+      // Ocultamos el input de nueva categoría
+      const inputNueva = document.getElementById('nueva-categoria-input');
+      if (inputNueva) {
+        inputNueva.style.display = 'none';
+        inputNueva.value = '';
+      }
+      
+      cargar(); // Al recargar, la base de datos detectará la nueva categoría y la pondrá en las listas
     } else {
       alert("Error al guardar en el servidor");
     }

@@ -15,16 +15,62 @@ body {
   color: var(--color-texto);
 }
 
+main {
+  color: rgb(0, 0, 0);
+  padding: 0px 30px 50px 30px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+main hr {
+  margin: 10px 0;
+  border: none;
+  border-top: 1.5px solid rgba(183, 110, 121, 0.2);
+}
+
+/*                */
 /* --- HEADER --- */
+/*                */
+
+
+/* Configuramos el header principal para que apile los divs uno debajo del otro */
+
 .header {
   background: var(--rose-gold);
   color: white;
-  padding: 15px 30px;
+  padding: 0px 30px 50px 30px;
   display: flex;
-  align-items: center;
+  flex-direction: column;
   justify-content: space-between;
   box-shadow: 0 4px 12px rgba(183, 110, 121, 0.2);
 }
+
+/* Le devolvemos el espaciado y la distribución a la parte de arriba */
+.header-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 30px;
+  width: 100%;
+  box-sizing: border-box; /* Evita que el padding rompa el ancho */
+}
+
+/* AQUÍ LIMITAMOS EL TAMAÑO DEL CONTENEDOR DE LA IMAGEN */
+.header-banner {
+  width: 100%;
+  height: 350px; /* Cambia este valor para hacerla más alta o más bajita */
+  overflow: hidden; /* Oculta cualquier parte de la imagen que se salga */
+}
+
+/* AQUÍ LIMITAMOS LA IMAGEN EN SÍ */
+.header-banner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Magia pura: recorta la imagen proporcionalmente sin deformarla */
+  display: block; /* Elimina un espacio blanco fantasma que a veces dejan las imágenes */
+}
+
 
 .header input {
   flex: 1;
